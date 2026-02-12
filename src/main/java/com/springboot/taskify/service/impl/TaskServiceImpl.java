@@ -5,7 +5,7 @@ import com.springboot.taskify.exception.ResourceNotFoundException;
 import com.springboot.taskify.mapper.TaskMapper;
 import com.springboot.taskify.model.Tag;
 import com.springboot.taskify.model.Task;
-import com.springboot.taskify.model.User;
+import com.springboot.taskify.model.UserEntity;
 import com.springboot.taskify.repository.TagRepository;
 import com.springboot.taskify.repository.TaskRepository;
 import com.springboot.taskify.repository.UserRepository;
@@ -51,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskDTO addTask(TaskDTO taskDTO) {
         Task task = TaskMapper.toTask(taskDTO);
-        User user = userRepository.findById(taskDTO.getUserId())
+        UserEntity user = userRepository.findById(taskDTO.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", taskDTO.getUserId()));
         task.setUser(user);
         return TaskMapper.toDto(taskRepository.save(task));
@@ -77,7 +77,7 @@ public class TaskServiceImpl implements TaskService {
         task.setPriority(taskDTO.getPriority());
         task.setStatus(taskDTO.getStatus());
         if (taskDTO.getUserId() != null) {
-            User user = userRepository.findById(taskDTO.getUserId())
+            UserEntity user = userRepository.findById(taskDTO.getUserId())
                     .orElseThrow(() ->
                             new ResourceNotFoundException("User", "id", taskDTO.getId()));
             task.setUser(user);

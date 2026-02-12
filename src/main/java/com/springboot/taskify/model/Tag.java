@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Set;
@@ -17,6 +19,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Tag extends BaseEntity {
 
+    @NotBlank
+    @Size(max = 50)
     @Column(length = 50, unique = true, nullable = false)
     private String tagName;
 

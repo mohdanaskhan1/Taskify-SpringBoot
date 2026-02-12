@@ -6,6 +6,7 @@ import com.springboot.taskify.model.Task;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -45,8 +46,11 @@ public class TaskMapper {
 
 
     private static List<String> mapTags(Set<Tag> tags) {
-        return (tags != null)
-                ? tags.stream().map(Tag::getTagName).toList()
-                : null;
+        if (tags == null || tags.isEmpty()){
+            return Collections.emptyList();
+        }
+        return tags.stream()
+                .map(Tag::getTagName)
+                .toList();
     }
 }

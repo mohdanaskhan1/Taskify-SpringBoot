@@ -1,6 +1,9 @@
 package com.springboot.taskify.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
@@ -17,17 +20,26 @@ import java.util.Set;
 @AllArgsConstructor
 public class Task extends BaseEntity {
 
+    @NotBlank
+    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String title;
 
+    @Size(max = 5000)
     @Column(columnDefinition = "text")
     private String description;
 
+    @FutureOrPresent
     private Instant dueDate;
 
+    @NotBlank
+    @Size(max = 10)
     @Column(length = 10)
     private String priority;
 
+
+    @NotBlank
+    @Size(max = 20)
     @Column(length = 20)
     private String status;
 
@@ -36,7 +48,7 @@ public class Task extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

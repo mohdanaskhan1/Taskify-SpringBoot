@@ -17,7 +17,6 @@ public class TagController {
     private final TagService tagService;
     private final TaskService taskService;
 
-    @Autowired
     public TagController(TagService tagService, TaskService taskService) {
         this.tagService = tagService;
         this.taskService = taskService;
