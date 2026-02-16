@@ -49,6 +49,7 @@ public class AuthService {
                 .username(signupRequestDTO.getUsername())
                 .providerId(providerId)
                 .providerType(authProviderType)
+                .role("ROLE_USER")
                 .build();
 
         if(authProviderType == AuthProviderType.EMAIl){

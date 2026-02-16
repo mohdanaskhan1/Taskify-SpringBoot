@@ -29,9 +29,8 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true, length = 30)
     private String username;
 
-    @NotBlank
-    @Size(min = 8)
-    @Column(nullable = false)
+
+    @Column(length = 255)
     private String password;
 
     private String providerId;
@@ -57,8 +56,29 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
