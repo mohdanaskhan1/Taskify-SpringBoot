@@ -2,7 +2,6 @@ package com.springboot.taskify.security;
 
 import com.springboot.taskify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

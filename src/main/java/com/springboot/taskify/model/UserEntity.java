@@ -1,5 +1,6 @@
 package com.springboot.taskify.model;
 
+import com.springboot.taskify.model.type.AuthProviderType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,13 +18,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "app_user", indexes = {
+        @Index(name = "idx_provider_id_provider_type", columnList = "providerId, providerType")
+})
 @Builder(toBuilder = true)
-public class UserEntity implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class UserEntity extends BaseEntity implements UserDetails {
 
     @NotBlank
     @Size(min = 3, max = 30)
@@ -34,6 +33,11 @@ public class UserEntity implements UserDetails {
     @Size(min = 8)
     @Column(nullable = false)
     private String password;
+
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProviderType providerType;
 
     private String role;
 

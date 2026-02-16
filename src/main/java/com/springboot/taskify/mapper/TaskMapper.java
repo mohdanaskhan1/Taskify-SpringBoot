@@ -46,7 +46,7 @@ public class TaskMapper {
 
 
     private static List<String> mapTags(Set<Tag> tags) {
-        if (tags == null || tags.isEmpty()){
+        if (tags == null || tags.isEmpty()) {
             return Collections.emptyList();
         }
         return tags.stream()
