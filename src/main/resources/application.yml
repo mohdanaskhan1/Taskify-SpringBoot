@@ -1,9 +1,16 @@
 spring.security.oauth2.client:
         registration:
           google:
-            client-id: ***REMOVED***
-            client-secret: ***REMOVED***
+#            client-id: 59716581837-tncaffikb83brd3ieacict5a4rf67ltd.apps.googleusercontent.com
+#            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+                - openid
+                - profile
+                - email
           github:
-            client-id: ajdkajkdjksjdkj
-            client-secret: snfnkhfkhfkh
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
 

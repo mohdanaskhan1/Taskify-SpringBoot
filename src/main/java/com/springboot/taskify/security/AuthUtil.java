@@ -77,7 +77,7 @@ public class AuthUtil {
         if (email != null && !email.isBlank()) {
             return email;
         }
-        return switch (registrationId.toLowerCase()){
+        return switch (registrationId.toLowerCase()) {
             case "google" -> oAuth2User.getAttribute("sub");
             case "github" -> oAuth2User.getAttribute("login");
             default -> providerId;

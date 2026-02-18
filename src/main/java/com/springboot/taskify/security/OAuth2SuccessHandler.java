@@ -4,7 +4,7 @@ import com.springboot.taskify.dto.LoginResponseDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,11 +17,16 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
     private final ObjectMapper objectMapper;
+
+    public OAuth2SuccessHandler(@Lazy AuthService authService, ObjectMapper objectMapper) {
+        this.authService = authService;
+        this.objectMapper = objectMapper;
+    }
 
 
     @Override

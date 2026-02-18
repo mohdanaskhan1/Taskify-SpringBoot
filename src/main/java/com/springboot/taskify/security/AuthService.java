@@ -8,7 +8,6 @@ import com.springboot.taskify.model.type.AuthProviderType;
 import com.springboot.taskify.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -36,23 +35,23 @@ public class AuthService {
         UserEntity user = (UserEntity) authenticate.getPrincipal();
 
         String token = authUtil.generateAccessToken(user);
-        return new LoginResponseDTO(token,user.getId());
+        return new LoginResponseDTO(token, user.getId());
     }
 
     public UserEntity signupInternal(LoginRequestDTO signupRequestDTO,
                                      AuthProviderType authProviderType,
-                                     String providerId){
+                                     String providerId) {
         UserEntity user = userRepository.findByUsername(signupRequestDTO.getUsername()).orElse(null);
-        if(user != null) throw new IllegalArgumentException("User Already Exists");
+        if (user != null) throw new IllegalArgumentException("User Already Exists");
 
-        user =  UserEntity.builder()
+        user = UserEntity.builder()
                 .username(signupRequestDTO.getUsername())
                 .providerId(providerId)
                 .providerType(authProviderType)
                 .role("ROLE_USER")
                 .build();
 
-        if(authProviderType == AuthProviderType.EMAIl){
+        if (authProviderType == AuthProviderType.EMAIl) {
             user.setPassword(passwordEncoder.encode(signupRequestDTO.getPassword()));
         }
         return userRepository.save(user);
@@ -81,18 +80,17 @@ public class AuthService {
         String email = oAuth2User.getAttribute("email");
         UserEntity emailUser = userRepository.findByUsername(email).orElse(null);
 
-        if(user == null && emailUser == null){
+        if (user == null && emailUser == null) {
             //signUp Flow
             String username = authUtil.determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
-            user = signupInternal(new LoginRequestDTO(username,null), providerType, providerId);
-        }else if (user != null){
-            if(email != null && !email.isBlank() && !email.equals(user.getUsername())){
+            user = signupInternal(new LoginRequestDTO(username, null), providerType, providerId);
+        } else if (user != null) {
+            if (email != null && !email.isBlank() && !email.equals(user.getUsername())) {
                 user.setUsername(email);
                 userRepository.save(user);
             }
-        }
-        else {
-            throw new BadCredentialsException("This email is already register with provider "+ emailUser.getProviderId());
+        } else {
+            throw new BadCredentialsException("This email is already register with provider " + emailUser.getProviderId());
         }
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO(authUtil.generateAccessToken(user), user.getId());
         return ResponseEntity.ok(loginResponseDTO);
