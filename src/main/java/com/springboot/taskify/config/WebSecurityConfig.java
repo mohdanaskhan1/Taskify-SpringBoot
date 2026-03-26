@@ -19,10 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,18 +50,36 @@ public class WebSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    // --- ADDED THIS FOR FRONTEND TO COMMUNICATE WITH BACKEND ---
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Add your frontend Render URL and localhost here
+        configuration.setAllowedOrigins(List.of("https://taskify-webapp.onrender.com", "http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- ENABLED CORS HERE
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Allow access to the root and Swagger UI
                         .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // Allow your existing auth endpoints
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/error").permitAll() // <-- Allows 404s to resolve without triggering a login redirect
-                        .anyRequest().authenticated()          // <-- Secures all other unmapped endpoints
+                        // Allow /error to prevent login redirect loops on 404s
+                        .requestMatchers("/error").permitAll() // <-- ADDED THIS
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2 -> oAuth2
@@ -82,19 +100,5 @@ public class WebSecurityConfig {
         return (request, response, accessDeniedException) -> {
             handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
         };
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        // Replace with your actual frontend URL(s)
-        configuration.setAllowedOrigins(List.of("https://taskify-webapp.onrender.com", "http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
-        configuration.setAllowCredentials(true); // Required for sending OAuth cookies
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
