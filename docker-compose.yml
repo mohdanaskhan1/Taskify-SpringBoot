@@ -1,0 +1,19 @@
+version: '1.1'
+services:
+  app:
+    image: docker-demo:1.0
+    container_name: taskify-app
+    ports:
+      - "9090:9090"
+    environment:
+      SERVER_PORT: 9090
+      # Pointing to the .env file variables
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET}
+    volumes:
+      - names-volume:/app
+
+volumes:
+  names-volume:
