@@ -51,10 +51,10 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Allow access to the root and Swagger UI
                         .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // Allow your existing auth endpoints
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll() // <-- Allows 404s to resolve without triggering a login redirect
+                        .anyRequest().authenticated()          // <-- Secures all other unmapped endpoints
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2 -> oAuth2
