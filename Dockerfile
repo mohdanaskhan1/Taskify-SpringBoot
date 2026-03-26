@@ -1,16 +1,16 @@
-
-# Base Image
-FROM eclipse-temurin:25-jdk
-
-#Working Directory
+# Stage 1: Build the application using Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
+# Copy the pom.xml and source code
+COPY pom.xml .
+COPY src ./src
+# Package the application (this ensures you ALWAYS deploy the latest code)
+RUN mvn clean package -DskipTests
 
-#Copy Files
-COPY target/Taskify-0.0.1-SNAPSHOT.jar app.jar
-
-#Expose Port
+# Stage 2: Run the application
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+# Copy the freshly built JAR from the 'build' stage
+COPY --from=build /app/target/Taskify-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8082
-
-#Startup Command
-ENTRYPOINT ["java","-jar", "app.jar"]
-
+ENTRYPOINT ["java", "-jar", "app.jar"]
