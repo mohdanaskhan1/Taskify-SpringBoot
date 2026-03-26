@@ -50,11 +50,9 @@ public class WebSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    // --- ADDED THIS FOR FRONTEND TO COMMUNICATE WITH BACKEND ---
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Add your frontend Render URL and localhost here
         configuration.setAllowedOrigins(List.of("https://taskify-webapp.onrender.com", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
@@ -68,17 +66,14 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- ENABLED CORS HERE
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Allow access to the root and Swagger UI
                         .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // Allow your existing auth endpoints
                         .requestMatchers("/auth/**").permitAll()
-                        // Allow /error to prevent login redirect loops on 404s
-                        .requestMatchers("/error").permitAll() // <-- ADDED THIS
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
